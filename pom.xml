@@ -6,5 +6,9 @@
   <packaging>pom</packaging>
   <modules>
   	<module>app-web</module>
+  	<module>app-daos</module>
+  	<module>app-service</module>
+  	<module>app-dpmain</module>
+  	<module>app-domain</module>
   </modules>
 </project>
