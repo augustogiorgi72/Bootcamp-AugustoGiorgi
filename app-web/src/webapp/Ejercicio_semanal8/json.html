@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Json</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script>
+        
+    	function apiJason() {
+            axios.get(`http://jsonplaceholder.typicode.com/comments`)
+            .then(function (response) {
+            	listado(response.data);
+            	let map = contarMap(response.data);
+            	mostrarMap(map);
+              	
+            })
+            .catch(function (error) { 
+            	console.log('Error consultando la pagina');
+            })
+            .then(function () {
+                console.log('Mostrando API');
+            });
+        }
+        	
+    	function listado(data){
+                const divCases = document.getElementById('lista');
+                const listTable = `
+                    <table class="table">
+                        <thead>
+	                        <tr>
+		                        <th scope="col">id</th>
+		                        <th scope="col">name</th>
+		                        <th scope="col">email</th>
+		                        <th scope="col">body</th> 
+	                        </tr>
+                        </thead>
+                        <tbody>
+                           ${info(data)}
+                        </tbody>
+                    </table>`
+               divCases.innerHTML = listTable;
+    	}
+    	
+ 	 	function info(data){
+             let casesRow='';
+             for(let data_element of data){
+            	 casesRow+=`
+            		<tr>
+	                     <th scope="row">${data_element.id}</th>
+	                     <td>${data_element.name}</td>
+	                     <td>${data_element.email}</td>
+	                     <td>${data_element.body}</td>
+	                </tr>     
+                 `;
+             }
+             return casesRow;
+        }
+ 	 	
+ 	 	function extensiones(data){
+ 			let emailsExt =[];
+ 			let extension=[];
+ 	 		for(let da of data) {
+ 	            extension = [];
+ 	 			if(da.email!==null || da.email!==''){
+ 	 				extension = da.email.split('.');
+ 	   				emailsExt.push(extension[extension.length-1]);
+ 	            }
+ 	 		}    
+ 	 		return emailsExt;
+ 	 	}
+	
+ 	 	function contarMap(data){
+ 	 		let emailsExt= extensiones(data);
+ 	 		let map = new Map();
+ 	    	let tipos = '';
+ 	    	let cantidad = 0;
+ 	    	for(let ext1 of emailsExt){	    		
+ 	    		map.set(ext1,cantidad);
+ 	    		for(let ext2 of emailsExt){
+ 	    			if (ext1===ext2){
+ 	    				cantidad++;
+ 	    			}
+ 	    		}
+ 	    		map.set(ext1,cantidad)
+ 	    		cantidad=0;
+ 	    	}   		
+    		return map;
+ 	 	}
+ 	 	
+ 	 	function mostrarMap(map){
+ 	 		let divComentarios = document.getElementById(`comentarios`);
+ 	 		let divExtensiones = document.getElementById(`extensiones`); 
+ 	 		let list = `<ul>`
+ 	 		map.forEach( (value, key, map) => {
+				list+=`<li> Extension: .${key} = ${value} comentarios</li>` 
+ 			});	
+ 	 		list+=`</ul>`;
+ 	    	divComentarios.innerHTML = list;
+ 	    	
+ 	    	let cantidad = `Cantidad de extensiones: ${map.size}`;
+ 	    	divExtensiones.innerHTML = cantidad;
+ 	 	}
+ 	 	
+    </script>
+
+</head>
+<body onload="apiJason()">
+	<main>
+		<div class="conteiner">
+			<div class="row">
+				<div class="col-12 mt-5">
+					<div class="card">
+						<div class="alert alert-success" role="alert">JSON Placeholder</div>
+						<div class="card-header">Extensiones</div>
+						<div class="card-body">
+							<div id="extensiones"></div>
+						</div>
+						<div class="card-header">Cantidad de comentarios por Extension</div>
+						<div class="card-body">
+							<div id="comentarios"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 mt-5">
+					<div id="lista"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+</body>
+</html>
